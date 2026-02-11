@@ -1,15 +1,15 @@
 //
-//  SignUpView.swift
+//  SignUpView 2.swift
 //  AjjiL
 //
-//  Created by mohamed mahmoud sobhy badawy on 09/02/2026.
+//  Created by mohamed mahmoud sobhy badawy on 10/02/2026.
 //
+
 
 import SwiftUI
 
 struct SignUpView: View {
-    private let barHeight: CGFloat = 26
-    private let extraTop: CGFloat = 80
+    private let extraTop: CGFloat = 10
 
     var body: some View {
         ZStack {
@@ -18,23 +18,26 @@ struct SignUpView: View {
                 .scaledToFill()
                 .ignoresSafeArea()
 
-     
-            VStack {
-                SignUpScreen()
-                
+            ScrollView{
+                VStack{
+
+                   
+                    
+                }
             }
-            .safeAreaPadding(.top, barHeight + extraTop)
+           
         }
-        .overlay(alignment: .top) {
-            TopRow(onArabicTapped: {}, onSkipTapped: {})
-                .safeAreaPadding(.top, extraTop)
+        .safeAreaInset(edge: .top, spacing: -500) {
+            VStack(spacing: 0) {
+                // Optional extra spacing under the status bar
+                Spacer()
+                    .frame(height: extraTop)
+
+                TopRow(onArabicTapped: {}, onSkipTapped: {})
+            }
         }
     }
 }
-
-
-
-
 #Preview {
     SignUpView()
 }
