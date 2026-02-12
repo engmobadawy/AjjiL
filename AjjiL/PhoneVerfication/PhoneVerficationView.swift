@@ -11,7 +11,7 @@ struct PhoneVerificationView: View {
         NavigationStack {
             VStack(spacing: 0) {
 
-                TopRow()
+                TopRowWithBack(onBack: {})
                     .background(Image("background"))
 
                 ScrollView {

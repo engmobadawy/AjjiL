@@ -25,6 +25,7 @@ struct GreenButton: View {
         .disabled(!isEnabled)
         .animation(.easeInOut, value: isEnabled)
         .padding(.top, 16)
+//        .padding(.horizontal, 18)
     }
 }
 
@@ -47,6 +48,7 @@ struct WhiteButton: View {
         .disabled(!isEnabled)
         .animation(.easeInOut, value: isEnabled)
         .padding(.top, 16)
+//        .padding(.horizontal, 18)
     }
 }
 
@@ -74,9 +76,13 @@ private struct WhiteActionButtonStyle: ButtonStyle {
         configuration.label
             .background {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-//                    .fill(isEnabled ? Color.green : Color.gray.opacity(0.4))
                     .fill(.white )
             }
+            .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(.brandGreen
+                            , lineWidth: 1.5)
+        }
             .opacity(configuration.isPressed ? 0.9 : 1.0)
             .scaleEffect(configuration.isPressed ? 0.99 : 1.0)
     }

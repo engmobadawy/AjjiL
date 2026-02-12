@@ -43,7 +43,7 @@ struct OnboardingView: View {
             .background(Color(.systemBackground))
             .navigationBarBackButtonHidden(true)
             .navigationDestination(isPresented: $showSignUp) {
-                SignUpView(isAgreed: false)// if your SignUpView needs params, change it here
+                SignUpView(isAgreed: false)
             }
         }
         
