@@ -1,3 +1,11 @@
+//
+//  TextInputPreset.swift
+//  AjjiL
+//
+//  Created by mohamed mahmoud sobhy badawy on 14/02/2026.
+//
+
+
 import SwiftUI
 
 public enum TextInputPreset: Sendable {
@@ -47,6 +55,7 @@ public enum TextInputPreset: Sendable {
     var disableAutocorrection: Bool {
         switch self {
         case .email, .username, .url, .number, .phone, .password, .newPassword, .oneTimeCode: true
+            
         default: false
         }
     }

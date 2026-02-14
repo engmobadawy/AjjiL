@@ -1,5 +1,6 @@
 import SwiftUI
 
+
 struct CustomTextField: View {
     @Binding var text: String
 
@@ -7,8 +8,10 @@ struct CustomTextField: View {
     var icon: Image? = nil
     var backgroundColor: Color = .goodGray
     var strokeColor: Color? = nil
-    var keyboardType: UIKeyboardType = .default
+
+    var preset: TextInputPreset = .username
     var submitLabel: SubmitLabel = .done
+    var onSubmit: (() -> Void)? = nil
 
     var body: some View {
         HStack(spacing: 12) {
@@ -20,8 +23,9 @@ struct CustomTextField: View {
             }
 
             TextField(placeholder, text: $text)
-                .keyboardType(keyboardType)
+                .textInputPreset(preset)
                 .submitLabel(submitLabel)
+                .onSubmit { onSubmit?() }
         }
         .padding(.horizontal, 16)
         .frame(height: 56)
@@ -38,23 +42,16 @@ struct CustomTextField: View {
 
 
 
-
 struct SecureCustomTextField: View {
     @Binding var text: String
-
-    let placeholder: String
-
-    // Style
-    var lockIcon: Image = Image(systemName: "lock")
-    var eyeColor: Color = .secondary
-    var iconColor: Color = .secondary
+    var placeholder: String
+    
+    // Appearance
     var backgroundColor: Color = .goodGray
     var strokeColor: Color? = nil
-    var cornerRadius: CGFloat = 12
-    var height: CGFloat = 56
-    var strokeWidth: CGFloat = 3
-
+    
     // Behavior
+    var preset: TextInputPreset = .password
     var submitLabel: SubmitLabel = .done
     var onSubmit: (() -> Void)? = nil
 
@@ -63,68 +60,45 @@ struct SecureCustomTextField: View {
 
     var body: some View {
         HStack(spacing: 12) {
-    
-                lockIcon
+            Image(systemName: "lock.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 20, height: 20)
+                .foregroundStyle(.secondary)
+
+            Group {
+                if isRevealed {
+                    TextField(placeholder, text: $text)
+                } else {
+                    SecureField(placeholder, text: $text)
+                }
+            }
+            .textInputPreset(preset)
+            .focused($isFocused)
+            .submitLabel(submitLabel)
+            .onSubmit { onSubmit?() }
+
+            Button {
+                isRevealed.toggle()
+                isFocused = true           
+            } label: {
+                Image(systemName: isRevealed ? "eye" : "eye.slash")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 20, height: 20)
-                    .foregroundStyle(iconColor)
-                    .accessibilityHidden(true)
-            
-
-            field
-                .focused($isFocused)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            Button {
-                withAnimation(.easeInOut(duration: 0.15)) {
-                    isRevealed.toggle()
-                }
-            } label: {
-                Image(systemName: isRevealed ? "eye.fill" : "eye.slash.fill")
-                    .font(.system(size: 18, weight: .semibold))
-                
-                    .foregroundStyle(eyeColor)
-                    .contentTransition(.symbolEffect(.replace))
-                    .accessibilityLabel(isRevealed ? "Hide password" : "Show password")
+                    .foregroundStyle(.secondary)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .contentShape(Rectangle())
         }
         .padding(.horizontal, 16)
-        .frame(height: height)
-        .background(
-            backgroundColor,
-            in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-        )
+        .frame(height: 56)
+        .background(backgroundColor, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay {
             if let strokeColor {
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .stroke(strokeColor, lineWidth: strokeWidth)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(strokeColor, lineWidth: 3)
             }
-        }
-    }
-
-    @ViewBuilder
-    private var field: some View {
-        let prompt = Text(placeholder).foregroundStyle(.secondary)
-
-        if isRevealed {
-            TextField("", text: $text, prompt: prompt)
-                .textContentType(.password)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
-                .privacySensitive()
-                .submitLabel(submitLabel)
-                .onSubmit { onSubmit?() }
-        } else {
-            SecureField("", text: $text, prompt: prompt)
-                .textContentType(.password)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
-                .privacySensitive()
-                .submitLabel(submitLabel)
-                .onSubmit { onSubmit?() }
         }
     }
 }
@@ -133,26 +107,36 @@ struct SecureCustomTextField: View {
 
 
 
+
+
+import SwiftUI
+
 struct PhoneTextField: View {
     @Binding var text: String
 
-    // Fixed (always the same)
-    private let placeholder = "Phone Number"
-    private let countryCode = "+966"
-    private let flagImage = Image("flag")
-    private let phoneIcon = Image("Call")
-    private let chevronImage = Image(systemName: "chevron.down")
+    // Content
+    var placeholder: String = "Phone Number"
+    var countryCode: String = "+966"
 
-    // Customizable from the screen
+    // Images (SwiftUI)
+    var flagImage: Image = Image("flag")
+    var phoneIcon: Image = Image("Call")
+    var chevronImage: Image = Image(systemName: "chevron.down")
+
+    // Style
     var backgroundColor: Color = Color(.systemGray6)
     var strokeColor: Color? = nil
     var strokeWidth: CGFloat = 2
-
-    var keyboardType: UIKeyboardType = .phonePad
-    var submitLabel: SubmitLabel = .done
-
     var cornerRadius: CGFloat = 12
     var height: CGFloat = 56
+
+    var iconTint: Color = .secondary
+    var separatorColor: Color = .secondary.opacity(0.25)
+
+    // Behavior (SwiftUI-friendly)
+    var preset: TextInputPreset = .phone
+    var submitLabel: SubmitLabel = .next
+    var onSubmit: (() -> Void)? = nil
 
     var body: some View {
         HStack(spacing: 12) {
@@ -160,29 +144,36 @@ struct PhoneTextField: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 28, height: 20)
+                .accessibilityHidden(true)
 
             chevronImage
                 .resizable()
                 .scaledToFit()
                 .frame(width: 12, height: 12)
+                .foregroundStyle(iconTint)
+                .accessibilityHidden(true)
 
             Text(countryCode)
                 .font(.system(size: 18, weight: .medium))
+                .foregroundStyle(.primary)
 
             Rectangle()
-                .fill(Color.secondary.opacity(0.25))
+                .fill(separatorColor)
                 .frame(width: 1, height: 24)
+                .accessibilityHidden(true)
 
             TextField(placeholder, text: $text)
-                .keyboardType(keyboardType)
-                .submitLabel(submitLabel)
+                .textInputPreset(preset)
                 .font(.system(size: 18))
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .onSubmit { onSubmit?() }
 
             phoneIcon
                 .resizable()
                 .scaledToFit()
                 .frame(width: 22, height: 22)
+                .foregroundStyle(iconTint)
+                .accessibilityHidden(true)
         }
         .padding(.horizontal, 16)
         .frame(height: height)
@@ -193,7 +184,9 @@ struct PhoneTextField: View {
                     .stroke(strokeColor, lineWidth: strokeWidth)
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text(placeholder))
+        .accessibilityValue(Text("\(countryCode) \(text)"))
     }
 }
-
 

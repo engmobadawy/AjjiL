@@ -13,7 +13,7 @@ struct AjjiLApp: App {
     var body: some Scene {
         WindowGroup {
             ZStack{
-                OnboardingView()
+                SignUpView()
                     .opacity(showSplash ? 0 : 1)
                 
                 if showSplash {
